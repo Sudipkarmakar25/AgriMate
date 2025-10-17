@@ -1,0 +1,40 @@
+Farmer Authentication and Profile APIs
+
+ 1.Farmer Register
+ 2.Farmer login
+ 3.Farmer logout
+ 4.isFarmerLoggedIn
+ 5.GetFarmerProfile Info
+ 6.Update farmer profile Info.
+
+Plot management APIs
+ 
+ 1.Add a new Plot
+ 2.Update plot details
+ 3.Get All plots of a specific farmer
+ 4.Delete a plot
+
+Weather Updates APIs
+ 
+ 1.Get weather based on plot location
+ 2.Get Get farming actions based on Weather
+
+Crop Health Monitoring APIs
+ 
+ 1.Get Crop Diagnosis from image 
+ 2.Get Past diagnosis for a plot
+
+MARKET & SELLING SUGGESTION APIs
+  
+  1.Fetch latest mandi prices.
+  2.Suggest best time & market to sell.
+
+ADVISORY / RECOMMENDATION APIs
+  
+  1.Generate advice for that plot (using crop + weather + growth stage).
+  2.AI chatbot APi connected with LLM with history storage use of LangChain
+
+Government scheme recommentation APIs
+ 
+ 1.Get active schemes for that state.
+ 2.Get crop-specific subsidies or support programs.

@@ -1,11 +1,11 @@
 Farmer Authentication and Profile APIs
 
- 1.Farmer Register
- 2.Farmer login
- 3.Farmer logout
- 4.isFarmerLoggedIn
- 5.GetFarmerProfile Info
- 6.Update farmer profile Info.
+ 1.Farmer Register //completed
+ 2.Farmer login    //completed
+ 3.Farmer logout   //completed
+ 4.isFarmerLoggedIn //completed
+ 5.GetFarmerProfile Info (Not required As of now)
+ 6.Update farmer profile Info. (Not required as of now)
 
 Plot management APIs
  

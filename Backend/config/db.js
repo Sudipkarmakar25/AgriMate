@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const connectDB = async () => {
+export const connectDB = async () => {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
     console.warn('MONGODB_URI not set. Skipping DB connection.');
@@ -12,5 +12,3 @@ const connectDB = async () => {
   await mongoose.connect(uri);
   console.log('MongoDB connected');
 };
-
-module.exports = { connectDB }; 

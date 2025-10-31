@@ -9,10 +9,10 @@ Farmer Authentication and Profile APIs
 
 Plot management APIs
  
- 1.Add a new Plot
- 2.Update plot details
- 3.Get All plots of a specific farmer
- 4.Delete a plot
+ 1.Add a new Plot //Completed
+ 2.Update plot details //Completed
+ 3.Get All plots of a specific farmer //Completed
+ 4.Delete a plot //Completed
 
 Weather Updates APIs
  

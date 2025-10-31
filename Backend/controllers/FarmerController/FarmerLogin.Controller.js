@@ -6,15 +6,15 @@ const loginFarmer = async (req, res) => {
     if (!phonenumber || !password) {
       return res
         .status(400)
-        .json({ error: "Phone number and password are required" });
+        .json({success:false, error: "Phone number and password are required" });
     }
     const farmer = await Farmer.findOne({ phonenumber });
     if (!farmer) {
-      return res.status(400).json({ error: "User not found" });
+      return res.status(400).json({success:false, error: "User not found" });
     }
     const isPasswordCorrect = await farmer.isPassWordCorrect(password);
     if (!isPasswordCorrect) {
-      return res.status(400).json({ error: "Invalid password" });
+      return res.status(400).json({success:false, error: "Invalid password" });
     }
     const token = farmer.generateAccessToken();
 
@@ -29,9 +29,10 @@ const loginFarmer = async (req, res) => {
       message: "Farmer logged in successfully",
       farmer: loginFarmer,
       AccessToken: token,
+      success:true
     });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({success:false, error: error.message });
   }
 };
 

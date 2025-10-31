@@ -1,19 +1,12 @@
-import { useState, useEffect } from 'react'
-import './App.css'
+import React from 'react'
+import toast, { Toaster } from 'react-hot-toast';
+import { Outlet } from 'react-router-dom';
 
 function App() {
-  const [data, setData] = useState('Loading...');
-
-  useEffect(() => {
-    fetch('http://localhost:3693/hello')
-      .then((res) => res.text()) 
-      .then((value) => setData(value))
-      .catch((err) => setData('Error fetching data: ' + err.message));
-  }, []); 
-
   return (
     <>
-      <h1>{data}</h1>
+    <Toaster position="top-center" reverseOrder={false} />
+    <Outlet/>
     </>
   )
 }

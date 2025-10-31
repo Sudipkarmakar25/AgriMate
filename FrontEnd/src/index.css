@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes trainLoop {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-train-loop {
+  animation: trainLoop 20s linear infinite;
+}
+
+/* Pause animation on hover */
+.animate-train-loop:hover {
+  animation-play-state: paused;
+}
+.input-style {
+  @apply w-full px-5 py-3 rounded-lg bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

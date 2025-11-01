@@ -5,7 +5,7 @@ import App from './App.jsx'
 import {createBrowserRouter,RouterProvider} from 'react-router-dom';
 import {Provider} from 'react-redux';
 // import store from './store/store.js';
-import {FarmerRegistration, Home} from './pages/index.js';
+import {FarmerRegistration, Home,AddPlot, PlotDetails} from './pages/index.js';
 import store from './store/store.js';
 
 const router = createBrowserRouter([{
@@ -19,6 +19,14 @@ const router = createBrowserRouter([{
     {
       path:'/farmer-registration',
       element:<FarmerRegistration/>
+    },
+    {
+      path:'/add-plot',
+      element:<AddPlot/>
+    },
+    {
+      path:'/get-all-plots',
+      element:<PlotDetails/>
     }
   ]
 }])

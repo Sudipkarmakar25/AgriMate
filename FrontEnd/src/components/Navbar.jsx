@@ -1,8 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, Mic, Globe, User, LogOut, Settings } from "lucide-react";
+import {
+  Menu,
+  X,
+  Mic,
+  Plus,
+  User,
+  LogOut,
+  Settings,
+  ArrowRight,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logout} from "../store/authSlice";
+import { logout } from "../store/authSlice";
 
 const Navbar = () => {
   const authStatus = useSelector((state) => state.auth.status);
@@ -29,7 +38,6 @@ const Navbar = () => {
     { value: "ta", label: "தமிழ்" },
   ];
 
-
   const handleLogout = () => {
     dispatch(logout());
     setIsProfileOpen(false);
@@ -53,7 +61,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <a href="#" className="text-2xl font-bold tracking-tight">
-          AgriMate
+            AgriMate
           </a>
 
           {/* Desktop Links */}
@@ -87,6 +95,18 @@ const Navbar = () => {
 
                 {isProfileOpen && (
                   <div className="absolute right-0 mt-3 w-44 bg-white text-gray-800 rounded-lg shadow-lg z-50">
+                    <button
+                      onClick={() => navigate("/add-plot")}
+                      className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      <Plus className="w-4 h-4 mr-2" /> Add Plot
+                    </button>
+                    <button
+                      onClick={() => navigate("/get-all-plots")}
+                      className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      <ArrowRight className="w-4 h-4 mr-2" /> My Plots
+                    </button>
                     <button
                       onClick={() => navigate("/")}
                       className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100"
@@ -125,7 +145,11 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 rounded-md bg-white/20 hover:scale-105 transition"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
@@ -165,16 +189,30 @@ const Navbar = () => {
                 <User className="w-4 h-4 mr-2" /> Profile
               </button>
               <button
+                onClick={() => navigate("/add-plot")}
+                className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100"
+              >
+                <Plus className="w-4 h-4 mr-2" /> Add Plot
+              </button>
+              <button
+                onClick={() => navigate("/get-all-plots")}
+                className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100"
+              >
+                <ArrowRight className="w-4 h-4 mr-2" /> My Plots
+              </button>
+              <button
                 onClick={() => navigate("/")}
                 className="flex items-center w-full px-3 py-2 text-white hover:bg-white/10"
               >
-                <Settings className="w-4 h-4 mr-2" />Settings
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
               </button>
               <button
                 onClick={handleLogout}
                 className="flex items-center w-full px-3 py-2 text-red-300 hover:bg-white/10"
               >
-                <LogOut className="w-4 h-4 mr-2" />Logout
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
               </button>
             </>
           ) : (

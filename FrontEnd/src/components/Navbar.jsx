@@ -17,6 +17,9 @@ const Navbar = () => {
   const authStatus = useSelector((state) => state.auth.status);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [recognizedText, setRecognizedText] = useState("");
+  const recognitionRef = useRef(null);
   const profileRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -25,18 +28,133 @@ const Navbar = () => {
     { href: "#", label: "Crop Advisory" },
     { href: "#", label: "Soil Health" },
     { href: "#", label: "Pest Detection" },
-    { href: "#", label: "Weather" },
-    { href: "#", label: "Market Prices" },
+    { href: "/weather", label: "Weather" },
+    {
+      href: "https://www.myscheme.gov.in/search/category/Agriculture,Rural%20&%20Environment",
+      label: "Govt.Schemes",
+    },
   ];
 
-  const languageOptions = [
-    { value: "en", label: "English" },
-    { value: "hi", label: "हिन्दी" },
-    { value: "bn", label: "বাংলা" },
-    { value: "te", label: "తెలుగు" },
-    { value: "mr", label: "मराठी" },
-    { value: "ta", label: "தமிழ்" },
-  ];
+
+  useEffect(() => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.error("Speech Recognition API not supported in this browser");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = "en-IN";
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript.toLowerCase();
+      console.log("🎤 Heard:", transcript);
+      setRecognizedText(transcript);
+      handleVoiceCommand(transcript);
+    };
+
+    recognition.onspeechend = () => {
+      console.log("Speech ended");
+      recognition.stop();
+      setListening(false);
+    };
+
+    recognition.onend = () => {
+      console.log("Recognition ended");
+      setListening(false);
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+      setListening(false);
+      if (event.error === "no-speech") {
+        speak("I didn’t hear anything. Please try again.");
+      }
+    };
+
+    recognitionRef.current = recognition;
+  }, []);
+
+  const startListening = () => {
+    if (!recognitionRef.current) return;
+    setListening(true);
+    recognitionRef.current.start();
+    speak("Listening...");
+  };
+
+  const stopListening = () => {
+    if (!recognitionRef.current) return;
+    recognitionRef.current.stop();
+    setListening(false);
+    speak("Stopped listening.");
+  };
+
+  // ✅ Voice Commands
+  const handleVoiceCommand = (cmd) => {
+    const command = cmd.trim().toLowerCase().replace(/[^\w\s]/gi, "");
+    speak(`You said: ${command}`);
+    console.log(command);
+    
+  
+    const fuzzyMatch = (keywords) =>
+      keywords.some((word) => command.includes(word));
+  
+    if (fuzzyMatch(["crop", "crop advisory", "advisory"])) {
+      speak("Opening crop advisory page.");
+      navigate("/crop-advisory");
+    }
+    else if(fuzzyMatch(["login","log in","signup","sign up","register"])){
+      speak("Navigating to login page.");
+      navigate("/farmer-registration");
+    }
+    else if (fuzzyMatch(["weather", "check weather", "weather report"])) {
+      speak("Showing latest weather updates.");
+      navigate("/weather");
+    }
+    else if (fuzzyMatch(["scheme", "schemes", "government scheme"])) {
+      speak("Opening government schemes.");
+      window.open(
+        "https://www.myscheme.gov.in/search/category/Agriculture,Rural%20&%20Environment",
+        "_blank"
+      );
+    }
+    else if (fuzzyMatch(["logout", "sign out"])) {
+      speak("Logging you out.");
+      dispatch(logout());
+      navigate("/");
+    }
+    else if (fuzzyMatch(["add plot", "add a plot", "create plot", "new plot"])) {
+      if (authStatus) {
+        speak("Going to add plot page.");
+        navigate("/add-plot");
+      } else {
+        speak("You are not logged in. Please login to add plot.");
+        navigate("/farmer-registration");
+      }
+    }
+    else if (fuzzyMatch(["my plot", "my plots", "show plots", "open plots", "see plots"])) {
+      if (authStatus) {
+        speak("Opening your plots.");
+        navigate("/get-all-plots");
+      } else {
+        speak("you are not logged in.Please login to see your plots.");
+        navigate("/farmer-registration");
+      }
+    } else {
+      speak("ki bal ni kos toi, hedar put");
+    }
+  };
+  
+  // ✅ Text → Speech
+  const speak = (text) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-IN";
+    window.speechSynthesis.speak(utterance);
+  };
+
 
   const handleLogout = () => {
     dispatch(logout());
@@ -66,22 +184,44 @@ const Navbar = () => {
 
           {/* Desktop Links */}
           <div className="hidden md:flex space-x-4">
-            {navLinks.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="px-3 py-2 rounded-md text-sm font-semibold bg-white/15 hover:scale-105 transition"
-              >
-                {item.label}
-              </a>
-            ))}
+            {navLinks.map((item) =>
+              item.label === "Govt.Schemes" ? (
+                <a
+                  key={item.label}
+                  href="https://www.myscheme.gov.in/search/category/Agriculture,Rural%20&%20Environment"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-2 rounded-md text-sm font-semibold bg-white/15 hover:scale-105 transition cursor-pointer"
+                >
+                  Govt.Schemes
+                </a>
+              ) : (
+                <a
+                  key={item.label}
+                  onClick={() => navigate(item.href)}
+                  className="px-3 py-2 rounded-md text-sm font-semibold bg-white/15 hover:scale-105 transition cursor-pointer"
+                >
+                  {item.label}
+                </a>
+              )
+            )}
           </div>
 
           {/* Desktop Icons */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="p-2 rounded-full bg-white/20 hover:scale-105 transition">
+          <button
+              onClick={listening ? stopListening : startListening}
+              className={`p-2 rounded-full ${
+                listening ? "bg-red-500" : "bg-white/20"
+              } hover:scale-105 transition`}
+            >
               <Mic className="h-6 w-6" />
             </button>
+            {listening && (
+              <p className="text-sm animate-pulse text-lime-100">
+                Listening...
+              </p>
+            )}
 
             {/* Profile */}
             {authStatus ? (

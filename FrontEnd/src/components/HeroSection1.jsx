@@ -127,7 +127,7 @@ const HeroSection1 = () => {
       </section>
 
       {/* 🌾 Partners */}
-      <section className="py-14 bg-gradient-to-r from-lime-100 via-white to-emerald-50">
+      <section className="py-14 bg-gradient-to-r from-lime-300 via-white to-emerald-200">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="flex flex-wrap justify-center items-center gap-8">
             {partners.map((partner) => (

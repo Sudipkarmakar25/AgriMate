@@ -12,7 +12,7 @@
 }
 
 .animate-train-loop {
-  animation: trainLoop 20s linear infinite;
+  animation: trainLoop 10s linear infinite;
 }
 
 /* Pause animation on hover */

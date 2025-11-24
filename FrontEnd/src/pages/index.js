@@ -3,6 +3,7 @@ import FarmerRegistration from "./FarmerRegistration.jsx";
 import AddPlot from "./AddPlot.jsx";
 import PlotDetails from "./PlotDetails.jsx";
 import Weather from "./Weather.jsx";
+import CropAdvisory from "./CropAdvisory.jsx";
 
 
 export{
@@ -10,5 +11,6 @@ export{
     FarmerRegistration,
     AddPlot,
     PlotDetails,
-    Weather
+    Weather,
+    CropAdvisory
 }

@@ -25,7 +25,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
 
   const navLinks = [
-    { href: "#", label: "Crop Advisory" },
+    { href: "/advisory", label: "Crop Advisory" },
     { href: "#", label: "Soil Health" },
     { href: "#", label: "Pest Detection" },
     { href: "/weather", label: "Weather" },
@@ -144,7 +144,7 @@ const Navbar = () => {
         navigate("/farmer-registration");
       }
     } else {
-      speak("ki bal ni kos toi, hedar put");
+      speak("i didnt understand anything, can you please repeat?");
     }
   };
   

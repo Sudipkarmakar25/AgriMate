@@ -65,6 +65,8 @@ const Weather = () => {
       const response = await axios.get("http://localhost:3693/api/v1/plot/getAllPlots", {
         withCredentials: true,
       });
+      console.log(response);
+      
       if (response.data.success) setPlots(response.data.plots);
       else toast.error(response.data.message);
     } catch (error) {

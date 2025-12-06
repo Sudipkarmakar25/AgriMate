@@ -29,11 +29,7 @@ const Navbar = () => {
     { href: "/advisory", label: "Crop Advisory" },
     { href: "#", label: "Soil Health" },
     { href: "#", label: "Pest Detection" },
-<<<<<<< Updated upstream
     { href: "/weather", label: "Weather" },
-=======
-    { href: "#", label: "Weather" },
->>>>>>> Stashed changes
     {
       href: "https://www.myscheme.gov.in/search/category/Agriculture,Rural%20&%20Environment",
       label: "Govt.Schemes",
@@ -42,11 +38,8 @@ const Navbar = () => {
 
 
   useEffect(() => {
-<<<<<<< Updated upstream
-=======
     // console.log(authStatus);
     
->>>>>>> Stashed changes
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -107,28 +100,16 @@ const Navbar = () => {
     const command = cmd.trim().toLowerCase().replace(/[^\w\s]/gi, "");
     speak(`You said: ${command}`);
     console.log(command);
-<<<<<<< Updated upstream
-    
-  
-    const fuzzyMatch = (keywords) =>
-      keywords.some((word) => command.includes(word));
-  
-=======
 
 
     const fuzzyMatch = (keywords) =>
       keywords.some((word) => command.includes(word));
 
->>>>>>> Stashed changes
     if (fuzzyMatch(["crop", "crop advisory", "advisory"])) {
       speak("Opening crop advisory page.");
       navigate("/crop-advisory");
     }
-<<<<<<< Updated upstream
-    else if(fuzzyMatch(["login","log in","signup","sign up","register"])){
-=======
     else if (fuzzyMatch(["login", "log in", "signup", "sign up", "register"])) {
->>>>>>> Stashed changes
       speak("Navigating to login page.");
       navigate("/farmer-registration");
     }
@@ -169,11 +150,6 @@ const Navbar = () => {
       speak("i didnt understand anything, can you please repeat?");
     }
   };
-<<<<<<< Updated upstream
-  
-=======
-
->>>>>>> Stashed changes
   // ✅ Text → Speech
   const speak = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
@@ -234,18 +210,10 @@ const Navbar = () => {
 
           {/* Desktop Icons */}
           <div className="hidden md:flex items-center space-x-4">
-<<<<<<< Updated upstream
-          <button
-              onClick={listening ? stopListening : startListening}
-              className={`p-2 rounded-full ${
-                listening ? "bg-red-500" : "bg-white/20"
-              } hover:scale-105 transition`}
-=======
             <button
               onClick={listening ? stopListening : startListening}
               className={`p-2 rounded-full ${listening ? "bg-red-500" : "bg-white/20"
                 } hover:scale-105 transition`}
->>>>>>> Stashed changes
             >
               <Mic className="h-6 w-6" />
             </button>

@@ -3,6 +3,9 @@ import cors from 'cors';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 
+import chatRouter from './routes/ChatRoutes.js';
+import messageRouter from './routes/MessageRoutes.js';
+
 import { connectDB } from './config/db.js';
 import { errorHandler, notFound } from './middlewares/errorHandler.js';
 
@@ -16,7 +19,7 @@ const app = express();
 /* -------------------------- GLOBAL MIDDLEWARES -------------------------- */
 
 app.use(cors({
-  origin: true,
+  origin: "http://localhost:5173",   // keep frontend origin
   credentials: true,
 }));
 
@@ -25,18 +28,16 @@ app.use(cookieParser());
 // Serve uploads folder
 app.use("/uploads", express.static("uploads"));
 
-/* 
-  IMPORTANT:
-  JSON body parser MUST come BEFORE community routes because comment + reply use JSON.
-  Multer can still parse multipart even after express.json().
+/*
+  JSON body parser BEFORE routes.
+  Multer still works after this.
 */
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* ------------------------------ ROUTES ------------------------------ */
 
-// Community routes (posts, comments, reply)
+// Community routes (posts, comments, replies)
 app.use("/api/v1/community", farmerCommunityRoutes);
 
 // Farmer routes
@@ -44,6 +45,12 @@ app.use('/api/v1/farmer', farmer);
 
 // Plot routes
 app.use('/api/v1/plot', plot);
+
+// Chat routes
+app.use('/api/v1/chat', chatRouter);
+
+// Message routes
+app.use('/api/v1/message', messageRouter);
 
 // Root endpoint
 app.get('/', (_req, res) => {

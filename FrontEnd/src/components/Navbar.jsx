@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   Menu,
@@ -22,7 +23,7 @@ const Navbar = () => {
   const recognitionRef = useRef(null);
   const profileRef = useRef(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const navLinks = [
     { href: "/advisory", label: "Crop Advisory" },
@@ -37,6 +38,8 @@ const Navbar = () => {
 
 
   useEffect(() => {
+    // console.log(authStatus);
+    
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -97,16 +100,16 @@ const Navbar = () => {
     const command = cmd.trim().toLowerCase().replace(/[^\w\s]/gi, "");
     speak(`You said: ${command}`);
     console.log(command);
-    
-  
+
+
     const fuzzyMatch = (keywords) =>
       keywords.some((word) => command.includes(word));
-  
+
     if (fuzzyMatch(["crop", "crop advisory", "advisory"])) {
       speak("Opening crop advisory page.");
       navigate("/crop-advisory");
     }
-    else if(fuzzyMatch(["login","log in","signup","sign up","register"])){
+    else if (fuzzyMatch(["login", "log in", "signup", "sign up", "register"])) {
       speak("Navigating to login page.");
       navigate("/farmer-registration");
     }
@@ -147,7 +150,6 @@ const Navbar = () => {
       speak("i didnt understand anything, can you please repeat?");
     }
   };
-  
   // ✅ Text → Speech
   const speak = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
@@ -181,7 +183,6 @@ const Navbar = () => {
           <a href="#" className="text-2xl font-bold tracking-tight">
             AgriMate
           </a>
-
           {/* Desktop Links */}
           <div className="hidden md:flex space-x-4">
             {navLinks.map((item) =>
@@ -209,11 +210,10 @@ const Navbar = () => {
 
           {/* Desktop Icons */}
           <div className="hidden md:flex items-center space-x-4">
-          <button
+            <button
               onClick={listening ? stopListening : startListening}
-              className={`p-2 rounded-full ${
-                listening ? "bg-red-500" : "bg-white/20"
-              } hover:scale-105 transition`}
+              className={`p-2 rounded-full ${listening ? "bg-red-500" : "bg-white/20"
+                } hover:scale-105 transition`}
             >
               <Mic className="h-6 w-6" />
             </button>

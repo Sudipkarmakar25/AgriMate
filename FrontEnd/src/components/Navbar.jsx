@@ -27,7 +27,7 @@ const Navbar = () => {
   const navLinks = [
     { href: "/advisory", label: "Crop Advisory" },
     { href: "#", label: "Soil Health" },
-    { href: "#", label: "Pest Detection" },
+    { href: "/pest-detection", label: "Pest Detection" },
     { href: "/weather", label: "Weather" },
     {
       href: "https://www.myscheme.gov.in/search/category/Agriculture,Rural%20&%20Environment",

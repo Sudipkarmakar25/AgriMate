@@ -29,6 +29,7 @@ const ChatBox = ({ selectedChat }) => {
         setPromt(promptCopy);
       }
     } catch (error) {
+      console.log("huuuuu")
       toast.error(error.message);
     } finally {
       setPromt("");

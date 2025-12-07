@@ -6,9 +6,25 @@ export const getAllPosts = async (req, res) => {
       .populate("farmer")
       .populate({
         path: "comments",
+        match: { parent: null }, // only fetch root-level comments
         populate: [
           { path: "farmer" },
-          { path: "replies.farmer" },
+          {
+            path: "children",
+            populate: [
+              { path: "farmer" },
+              {
+                path: "children",
+                populate: [
+                  { path: "farmer" },
+                  {
+                    path: "children",
+                    populate: { path: "farmer" } // supports 3-level nested replies
+                  }
+                ]
+              }
+            ]
+          }
         ],
       })
       .sort({ createdAt: -1 });

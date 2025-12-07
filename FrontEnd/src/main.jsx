@@ -11,10 +11,11 @@ import {
   PlotDetails,
   Weather,
   CropAdvisory,
-  PestDetection
+  PestDetection,
 } from "./pages/index.js";
 import store from "./store/store.js";
 import Navbar from "./components/Navbar.jsx";
+import ChatBot from "./pages/ChatBot.jsx";
 
 const router = createBrowserRouter([
   {
@@ -47,13 +48,17 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path:"/advisory",
-        element:<CropAdvisory/>
+        path: "/advisory",
+        element: <CropAdvisory />,
       },
       {
-        path:"/pest-detection",
-        element:<PestDetection/>
-      }
+        path: "/pest-detection",
+        element: <PestDetection />,
+      },
+      {
+        path: "/chatbot",
+        element: <ChatBot />,
+      },
     ],
   },
 ]);

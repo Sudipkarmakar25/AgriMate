@@ -21,8 +21,8 @@ const loginFarmer = async (req, res) => {
     const loginFarmer = await Farmer.findById(farmer._id).select("-password");
     res.cookie("accessToken", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: false,
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.status(200).json({

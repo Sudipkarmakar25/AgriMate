@@ -1,42 +1,78 @@
 import 'dotenv/config'; 
 import cors from 'cors';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+
+import chatRouter from './routes/ChatRoutes.js';
+import messageRouter from './routes/MessageRoutes.js';
+
+import { connectDB } from './config/db.js';
+import { errorHandler, notFound } from './middlewares/errorHandler.js';
+
+// Routers
 import farmer from './routes/FarmerRoutes.js';
 import plot from './routes/PlotRoutes.js';
-import express from 'express';
-import  {connectDB} from './config/db.js';
-import { errorHandler, notFound } from './middlewares/errorHandler.js';
-import cookieParser from 'cookie-parser';
+import farmerCommunityRoutes from "./routes/FarmerCommunityRoutes.js";
 
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+/* -------------------------- GLOBAL MIDDLEWARES -------------------------- */
 
-app.use( cors({
- origin: true, 
- credentials: true,
- })
-);
+app.use(cors({
+  origin: "http://localhost:5173",   // keep frontend origin
+  credentials: true,
+}));
 
 app.use(cookieParser());
 
-if (process.env.MONGODB_URI) {
- connectDB().catch((err) => {
- console.error('MongoDB connection failed:', err.message);
- });
-}
+// Serve uploads folder
+app.use("/uploads", express.static("uploads"));
 
+/*
+  JSON body parser BEFORE routes.
+  Multer still works after this.
+*/
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+/* ------------------------------ ROUTES ------------------------------ */
+
+// Community routes (posts, comments, replies)
+app.use("/api/v1/community", farmerCommunityRoutes);
+
+// Farmer routes
+app.use('/api/v1/farmer', farmer);
+
+// Plot routes
+app.use('/api/v1/plot', plot);
+
+// Chat routes
+app.use('/api/v1/chat', chatRouter);
+
+// Message routes
+app.use('/api/v1/message', messageRouter);
+
+// Root endpoint
 app.get('/', (_req, res) => {
- res.json({ status: 'ok', message: 'Welcome to your MVC backend' });
+  res.json({ status: 'ok', message: 'Welcome to your MVC backend' });
 });
 
-app.use('/api/v1/farmer', farmer);
-app.use('/api/v1/plot', plot);
+/* -------------------------- ERROR HANDLERS --------------------------- */
 
 app.use(notFound);
 app.use(errorHandler);
 
+/* ------------------------------- SERVER ------------------------------- */
+
 const PORT = Number(process.env.PORT) || 3693;
+
+// Connect DB then start server
+if (process.env.MONGODB_URI) {
+  connectDB().catch((err) => {
+    console.error('MongoDB connection failed:', err.message);
+  });
+}
+
 app.listen(PORT, () => {
-console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

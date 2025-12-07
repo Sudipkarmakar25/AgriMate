@@ -4,6 +4,7 @@ import 'dotenv/config';
 export const connectDB = async () => {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
+    
     console.warn('MONGODB_URI not set. Skipping DB connection.');
     return;
   }

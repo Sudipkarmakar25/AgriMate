@@ -14,10 +14,13 @@
     "axios": "^1.13.1",
     "i18next": "^25.6.0",
     "lucide-react": "^0.548.0",
+    "moment": "^2.30.1",
+    "prismjs": "^1.30.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hot-toast": "^2.6.0",
     "react-i18next": "^16.2.3",
+    "react-markdown": "^10.1.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.5"
   },

@@ -5,7 +5,7 @@ export const createPost = async (req, res) => {
   try {
     const farmerId = req.user?._id;
     const { text } = req.body;
-
+    
     if (!farmerId)
       return res.status(401).json({ success: false, message: "Unauthorized" });
 

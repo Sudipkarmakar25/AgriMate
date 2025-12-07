@@ -13,6 +13,7 @@ import {
   Weather,
   CropAdvisory,
   PestDetection,
+  BlogHomePage,
 } from "./pages/index.js";
 
 import Navbar from "./components/Navbar.jsx";
@@ -48,14 +49,12 @@ function AuthInitializer({ children }) {
     checkLogin();
   }, []);
 
-
   if (loading) {
     return <div className="text-center p-10 text-xl">Loading...</div>;
   }
 
   return children;
 }
-
 
 const router = createBrowserRouter([
   {
@@ -66,6 +65,7 @@ const router = createBrowserRouter([
       { path: "/farmer-registration", element: <FarmerRegistration /> },
       { path: "/add-plot", element: <AddPlot /> },
       { path: "/get-all-plots", element: <PlotDetails /> },
+
       {
         path: "/weather",
         element: (
@@ -75,16 +75,17 @@ const router = createBrowserRouter([
           </>
         ),
       },
+
+      // Merged routes
       { path: "/advisory", element: <CropAdvisory /> },
       { path: "/pest-detection", element: <PestDetection /> },
       { path: "/chatbot", element: <ChatBot /> },
+      { path: "/blog-home", element: <BlogHomePage /> },
     ],
   },
 ]);
 
-// ---------------------------------------------------
-// 3️⃣  Render App AFTER Auth Check
-// ---------------------------------------------------
+// Render App AFTER Auth Check
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>

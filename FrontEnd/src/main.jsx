@@ -10,7 +10,8 @@ import {
   AddPlot,
   PlotDetails,
   Weather,
-  CropAdvisory
+  CropAdvisory,
+  PestDetection,
 } from "./pages/index.js";
 import store from "./store/store.js";
 import Navbar from "./components/Navbar.jsx";
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
       {
         path: "/advisory",
         element: <CropAdvisory />,
+      },
+      {
+        path: "/pest-detection",
+        element: <PestDetection />,
       },
       {
         path: "/chatbot",

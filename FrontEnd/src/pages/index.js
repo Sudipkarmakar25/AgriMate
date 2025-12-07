@@ -4,6 +4,8 @@ import AddPlot from "./AddPlot.jsx";
 import PlotDetails from "./PlotDetails.jsx";
 import Weather from "./Weather.jsx";
 import CropAdvisory from "./CropAdvisory.jsx";
+import PestDetection from "./PestDetection.jsx";
+import BlogHomePage from "./BlogHomePage.jsx";
 
 
 export{
@@ -12,5 +14,7 @@ export{
     AddPlot,
     PlotDetails,
     Weather,
-    CropAdvisory
+    CropAdvisory,
+    PestDetection,
+    BlogHomePage
 }

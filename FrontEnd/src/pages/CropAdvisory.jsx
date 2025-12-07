@@ -8,15 +8,13 @@ import {
   Lightbulb,
   MapPin,
   Ruler,
-  Sun,
   Shovel,
-  Turtle,
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-
+/* ------------------------ Helper Functions ------------------------ */
 
 const formatDate = (isoString) => {
   if (!isoString) return "N/A";
@@ -56,27 +54,107 @@ const FieldTag = ({ icon: Icon, label, value }) => (
   </div>
 );
 
-const AdvisorySection = ({ title, content }) => (
-  <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/70">
-    <div className="flex items-center gap-3 mb-2">
-      <h4 className={`font-bold text-${title[1]}-500`}>{title[0]}</h4>
+/* ------------------------ FIXED AdvisorySection ------------------------ */
+
+const AdvisorySection = ({ title, content,id }) => {
+  const { label, color } = title;
+  const [previousAdvisory, setPreviousAdvisory] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    // When crop changes -> reset data and close section
+    setIsOpen(false);
+    setPreviousAdvisory([]);
+  }, [id]);
+
+
+   const getPreviousAdvisory = async () => {
+    try {
+      setIsLoading(true);
+      console.log("lkjhg")
+      const response = await axios.get(
+        `http://localhost:4003/api/messages/${id}`,
+        { withCredentials: true }
+      );
+     console.log(response)
+      if (response.data.success) {
+        const sorted = [...response.data.messages].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt) // latest first
+        );
+        setPreviousAdvisory(sorted);
+        setIsOpen(true);
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error("Failed to fetch previous advisories");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+   console.log(previousAdvisory);
+   
+  const colorMap = {
+    green: "text-green-500",
+    yellow: "text-yellow-500",
+    red: "text-red-500",
+  };
+
+  return (
+    <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/70">
+      {/* Previous advisories (sorted, on top) */}
+      {isOpen && previousAdvisory.length > 0 && (
+        <div className="mb-3 space-y-2">
+          {previousAdvisory.map((item) => (
+            <div
+              key={item._id}
+              className="p-2 rounded-lg bg-white/80 border text-sm text-gray-800"
+            >
+              <div className="text-xs text-gray-500 mb-1">
+                {new Date(item.createdAt).toLocaleString()}
+              </div>
+              <div>{item.message}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="flex items-center gap-3 mb-2">
+        <h4 className={`font-bold ${colorMap[color] || "text-gray-700"}`}>
+          {label}
+        </h4>
+      </div>
+
+      <p className="text-sm text-gray-700 leading-relaxed">{content}</p>
+
+      <button
+        onClick={getPreviousAdvisory}
+        className="mt-3 text-sm underline text-blue-600"
+      >
+        {isLoading ? "Loading..." : "Get Previous Advisory"}
+      </button>
     </div>
-    <p className="text-sm text-gray-700 leading-relaxed">{content}</p>
-  </div>
-);
+  );
+};
+
+/* ------------------------ Advisory Title (Option 2 - stable) ------------------------ */
 
 const getAdvisoryTitle = (status = "") => {
   const s = status.toLowerCase();
-  if (s === "") {
-    return ["General Advisory","green"];
-  } else if (s.includes("moderate")) {
-    return ["Moderate Condition Advisory","yellow"];
-  } else if (s.includes("Stress")) {
-    return ["Severe Condition Advisory","red"];
-  } else {
-    return ["General Advisory","green"];
-  }
+
+  if (!s || s === "unknown")
+    return { label: "General Advisory", color: "green" };
+
+  if (s.includes("moderate"))
+    return { label: "Moderate Condition Advisory", color: "yellow" };
+
+  if (s.includes("critical") || s.includes("stress") || s.includes("poor"))
+    return { label: "Severe Condition Advisory", color: "red" };
+
+  return { label: "General Advisory", color: "green" };
 };
+
+/* ------------------------ MAIN COMPONENT ------------------------ */
 
 const CropAdvisory = () => {
   const [selectedCropId, setSelectedCropId] = useState(null);
@@ -111,9 +189,12 @@ const CropAdvisory = () => {
     getPlotDetails();
   }, []);
 
+  /* ================================================================= */
+
   return (
     <div className="min-h-screen bg-lime-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
+
         {/* Back Button */}
         {selectedCrop && (
           <button
@@ -148,6 +229,7 @@ const CropAdvisory = () => {
 
         {/* Main Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
           {/* LEFT COLUMN */}
           <div className="lg:col-span-4">
             <h2 className="text-lg font-semibold text-gray-700 mb-2 px-1">
@@ -155,6 +237,7 @@ const CropAdvisory = () => {
             </h2>
 
             <div className="space-y-3 overflow-y-auto max-h-[calc(100vh-200px)] pr-2 custom-scrollbar">
+
               {plots.length === 0 ? (
                 <div className="text-sm text-gray-500 bg-white border border-dashed border-gray-300 rounded-xl p-6 text-center">
                   No plots found. Add a plot to start getting advisories.
@@ -175,11 +258,13 @@ const CropAdvisory = () => {
                         }`}
                     >
                       <div className="flex items-start gap-4">
+
                         <div className="h-12 w-12 rounded-lg flex items-center justify-center bg-green-100 text-green-600">
                           <Sprout className="h-6 w-6" />
                         </div>
 
                         <div className="flex-grow space-y-1">
+
                           <div className="flex items-center justify-between gap-2">
                             <h3
                               className={`font-bold text-base ${
@@ -213,6 +298,7 @@ const CropAdvisory = () => {
                               : "Planted"}{" "}
                             on {formatDate(crop.plantationDate)}
                           </p>
+
                         </div>
 
                         <ChevronRight
@@ -233,6 +319,7 @@ const CropAdvisory = () => {
           {/* RIGHT COLUMN */}
           <div className="lg:col-span-8">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-200 min-h-[500px] overflow-hidden">
+
               {!selectedCrop ? (
                 <div className="h-full flex flex-col items-center justify-center p-12 text-center text-gray-400">
                   <Sprout className="h-16 w-16 opacity-50 mb-4" />
@@ -240,10 +327,13 @@ const CropAdvisory = () => {
                 </div>
               ) : (
                 <>
+
                   {/* HEADER */}
                   <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-8 text-white">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+
                       <div className="space-y-2">
+
                         <div className="flex items-center gap-2 text-green-100 text-xs font-medium">
                           <Sprout className="h-4 w-4" />
                           <span className="uppercase tracking-wide">
@@ -256,7 +346,8 @@ const CropAdvisory = () => {
                         </h2>
 
                         <div className="flex flex-wrap items-center gap-2 mt-1">
-                          <span className="inline-flex items-center gap-2 px-3 py-1 text-xs bg-white/20 rounded-full">
+
+                          <span className="inline-flex item-center gap-2 px-3 py-1 text-xs bg-white/20 rounded-full">
                             <Calendar className="h-4 w-4" />
                             {isFutureDate(selectedCrop.plantationDate)
                               ? `Plantation scheduled for ${formatDate(
@@ -274,49 +365,32 @@ const CropAdvisory = () => {
                           >
                             {selectedCrop.status || "unknown"}
                           </span>
+
                         </div>
                       </div>
 
-                      {/* Weather (mock) */}
+                      {/* Weather box */}
                       <div className="bg-white/10 p-3 rounded-xl border border-white/20 min-w-[160px]">
                         <p className="text-[11px] text-green-100">
-                          Conditions look {selectedCrop.status || "unknown"}
+                          Status: {selectedCrop.status || "unknown"}
                         </p>
                         <p className="text-[10px] text-green-100/80 mt-1">
                           Last Message: {formatDate(selectedCrop.lastUpdated)}
                         </p>
                       </div>
+
                     </div>
                   </div>
 
                   {/* DETAILS */}
                   <div className="p-8 space-y-6">
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      <FieldTag
-                        icon={Shovel}
-                        label="Soil Type"
-                        value={selectedCrop.soilType}
-                      />
-                      <FieldTag
-                        icon={Droplets}
-                        label="Irrigation"
-                        value={selectedCrop.irrigationType}
-                      />
-                      <FieldTag
-                        icon={Ruler}
-                        label="Area"
-                        value={`${selectedCrop.area} acre`}
-                      />
-                      <FieldTag
-                        icon={MapPin}
-                        label="Location"
-                        value={selectedCrop.location}
-                      />
-                      <FieldTag
-                        icon={Calendar}
-                        label="Created At"
-                        value={formatDate(selectedCrop.createdAt)}
-                      />
+                      <FieldTag icon={Shovel} label="Soil Type" value={selectedCrop.soilType} />
+                      <FieldTag icon={Droplets} label="Irrigation" value={selectedCrop.irrigationType} />
+                      <FieldTag icon={Ruler} label="Area" value={`${selectedCrop.area} acre`} />
+                      <FieldTag icon={MapPin} label="Location" value={selectedCrop.location} />
+                      <FieldTag icon={Calendar} label="Created At" value={formatDate(selectedCrop.createdAt)} />
                     </div>
 
                     {/* ADVISORY TITLE */}
@@ -342,7 +416,9 @@ const CropAdvisory = () => {
                           ? "Field preparation recommended: clean weeds, prepare beds/ridges, check soil moisture, and ensure irrigation systems are functional before sowing."
                           : selectedCrop.message || "No advisory available."
                       }
+                      id={selectedCropId}
                     />
+
                   </div>
 
                   {/* FOOTER */}
@@ -356,10 +432,13 @@ const CropAdvisory = () => {
                       </p>
                     </div>
                   </div>
+
                 </>
               )}
+
             </div>
           </div>
+
         </div>
       </div>
     </div>

@@ -19,7 +19,7 @@ const app = express();
 /* -------------------------- GLOBAL MIDDLEWARES -------------------------- */
 
 app.use(cors({
-  origin: "http://localhost:5173",   // keep frontend origin
+  origin: true,   // keep frontend origin
   credentials: true,
 }));
 

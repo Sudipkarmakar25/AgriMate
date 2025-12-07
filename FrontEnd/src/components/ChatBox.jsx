@@ -14,28 +14,55 @@ const ChatBox = ({ selectedChat }) => {
   // console.log(promt);
 
   const handleSubmit = async (e) => {
-    try {
-      e.preventDefault();
-      setLoading(true);
-      const promptCopy = promt;
-      setPromt("");
-      setMessages(prev => [...prev, { role: 'user', content: promptCopy, timestamp: Date.now(), isImage: false }])
-      const response = await axios.post(`http://localhost:3693/api/v1/message/${mode}`, { chatId: selectedChat._id, prompt: promptCopy }, { withCredentials: true });
-      if (response.data.success) {
-        setMessages(prev => [...prev, response.data.reply]);
-      }
-      else {
-        toast.error(response.data.message);
-        setPromt(promptCopy);
-      }
-    } catch (error) {
-      console.log("huuuuu")
-      toast.error(error.message);
-    } finally {
-      setPromt("");
-      setLoading(false);
-    }
+  e.preventDefault();
+
+  if (!selectedChat || !selectedChat._id) {
+    toast.error("Please select a chat first.");
+    return;
   }
+
+  try {
+    console.log("inside try");
+    setLoading(true);
+
+    const promptCopy = promt;
+    setPromt("");
+
+    console.log("inside try 2");
+
+    setMessages(prev => [
+      ...prev,
+      { role: 'user', content: promptCopy, timestamp: Date.now(), isImage: false }
+    ]);
+
+    console.log(promptCopy);
+    console.log("inside try 33");
+
+    const response = await axios.post(
+      `http://localhost:3693/api/v1/message/text`,
+      { chatId: selectedChat._id, prompt: promptCopy },
+      { withCredentials: true }
+    );
+
+    console.log("inside try 44");
+
+    if (response.data.success) {
+      setMessages(prev => [...prev, response.data.reply]);
+    } else {
+      toast.error(response.data.message);
+      setPromt(promptCopy);
+    }
+
+  } catch (error) {
+    console.log("huuuuu", error);
+    toast.error(error.message);
+  } finally {
+    setPromt("");
+    setLoading(false);
+  }
+};
+
+
 
   useEffect(() => {
     if (selectedChat) {

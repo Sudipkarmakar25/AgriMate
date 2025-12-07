@@ -23,7 +23,7 @@ const Navbar = () => {
   const recognitionRef = useRef(null);
   const profileRef = useRef(null);
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const navLinks = [
     { href: "/advisory", label: "Crop Advisory" },

@@ -12,6 +12,7 @@ import {
   Weather,
   CropAdvisory,
   PestDetection,
+  BlogHomePage
 } from "./pages/index.js";
 import store from "./store/store.js";
 import Navbar from "./components/Navbar.jsx";
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
         path: "/chatbot",
         element: <ChatBot />,
       },
+      {
+        path:"/blog-home",
+        element:<BlogHomePage/>
+      }
     ],
   },
 ]);

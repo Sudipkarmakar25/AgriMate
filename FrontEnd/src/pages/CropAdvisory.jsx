@@ -72,12 +72,12 @@ const AdvisorySection = ({ title, content,id }) => {
    const getPreviousAdvisory = async () => {
     try {
       setIsLoading(true);
-
+      console.log("lkjhg")
       const response = await axios.get(
         `http://localhost:4003/api/messages/${id}`,
         { withCredentials: true }
       );
-
+     console.log(response)
       if (response.data.success) {
         const sorted = [...response.data.messages].sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt) // latest first
@@ -86,6 +86,7 @@ const AdvisorySection = ({ title, content,id }) => {
         setIsOpen(true);
       }
     } catch (error) {
+      console.log(error)
       toast.error("Failed to fetch previous advisories");
     } finally {
       setIsLoading(false);

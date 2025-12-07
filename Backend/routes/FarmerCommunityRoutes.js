@@ -24,24 +24,10 @@ const FarmerCommunityRouter = Router();
 FarmerCommunityRouter.post(
   "/post",
 
-  (req, res, next) => {
-    console.log("🔥 BEFORE AUTH HEADERS:", req.headers["content-type"]);
-    next();
-  },
-
   authMiddleware,
-
-  (req, res, next) => {
-    console.log("🔥 BEFORE MULTER — req.files:", req.files);
-    next();
-  },
 
   upload.array("images", 5),
 
-  (req, res, next) => {
-    console.log("🔥 AFTER MULTER — req.files:", req.files);
-    next();
-  },
 
   createPost
 );

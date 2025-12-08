@@ -40,6 +40,11 @@ const PestDetection = () => {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
+  // NEW: advisory states
+  const [advisory, setAdvisory] = useState(null);
+  const [isAdvisoryLoading, setIsAdvisoryLoading] = useState(false);
+
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -54,13 +59,20 @@ const PestDetection = () => {
     reader.onload = (e) => {
       setSelectedImage(e.target.result);
       setResult(null);
+      setAdvisory(null); // clear previous advisory when new image selected
     };
     reader.readAsDataURL(file);
   };
 
   const handleAnalyze = async () => {
     try {
+      if (!file) {
+        toast.error("Please select an image first.");
+        return;
+      }
       setIsAnalyzing(true);
+      setAdvisory(null); // clear advisory when re-analyzing
+
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
@@ -72,16 +84,17 @@ const PestDetection = () => {
           },
         }
       );
-      if (response.status == 200) {
+      if (response.status === 200) {
         setResult(response.data);
       } else {
         setTimeout(() => {
-          setIsAnalyzing(false);
           setResult(MOCK_RESULT);
         }, 2500);
       }
     } catch (error) {
       toast.error(error.response?.data?.error || error.message);
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -89,6 +102,7 @@ const PestDetection = () => {
     setSelectedImage(null);
     setResult(null);
     setIsAnalyzing(false);
+    setAdvisory(null);
   };
 
   const onDragOver = (e) => {
@@ -106,6 +120,42 @@ const PestDetection = () => {
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
     if (file) processFile(file);
+  };
+
+  // NEW: fetch detailed advisory when CTA button is clicked
+  const handleFetchAdvisory = async () => {
+    if (!result?.disease_name) {
+      toast.error("Disease name not found. Please analyze again.");
+      return;
+    }
+    
+
+    try {
+      setIsAdvisoryLoading(true);
+      setAdvisory(null);
+
+      // 🔁 Change this URL & payload to match your backend route
+      const response = await axios.post(
+        "http://localhost:3693/api/v1/message/remedy",
+        {
+          diseaseName: result.disease_name,
+        },
+        {withCredentials: true}
+      );
+
+      // Assume API returns { advisory: "long text..." } or similar
+      setAdvisory(response.data);
+      console.log(response);
+      
+    } catch (error) {
+      toast.error(
+        error.response?.data?.error ||
+          error.response?.data?.message ||
+          "Failed to fetch advisory"
+      );
+    } finally {
+      setIsAdvisoryLoading(false);
+    }
   };
 
   return (
@@ -360,12 +410,33 @@ const PestDetection = () => {
                       </div>
                     </div>
 
-                    {/* CTA */}
-                    <div className="pt-1 sm:pt-2">
-                      <button className="inline-flex items-center text-sm sm:text-base text-emerald-700 font-semibold hover:text-emerald-900 hover:underline decoration-emerald-500">
-                        View detailed advisory for {result.disease_name}
+                    {/* CTA + Advisory */}
+                    <div className="pt-1 sm:pt-2 space-y-3">
+                      <button
+                        onClick={()=>handleFetchAdvisory(result.disease_name)}
+                        disabled={isAdvisoryLoading}
+                        className="inline-flex items-center text-sm sm:text-base text-emerald-700 font-semibold hover:text-emerald-900 hover:underline decoration-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {isAdvisoryLoading
+                          ? "Fetching advisory..."
+                          : `View detailed advisory for ${result.disease_name}`}
                         <ArrowRight className="h-4 w-4 ml-1" />
                       </button>
+
+                      {advisory && (
+                        <div className="mt-1 p-4 sm:p-5 rounded-2xl bg-white/80 border border-emerald-100 shadow-sm">
+                          <h3 className="text-sm sm:text-base font-bold text-emerald-900 mb-2">
+                            Detailed Advisory
+                          </h3>
+                          <p className="text-xs sm:text-sm text-emerald-950 leading-relaxed whitespace-pre-line">
+                            {/* Adjust according to actual response shape */}
+                            {advisory.advisory ||
+                              advisory.details ||
+                              advisory.message ||
+                              JSON.stringify(advisory, null, 2)}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -392,4 +463,3 @@ const PestDetection = () => {
 };
 
 export default PestDetection;
-``;

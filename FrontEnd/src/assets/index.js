@@ -6,6 +6,8 @@ import user from "./user.png"
 import bot from "./bot.png"
 import robot from "./robot.png"
 import send from "./send.png"
+import farmerQutoes from "./farmerQutoes.webp"
+
 export{
     farmingFeild,
     crop,
@@ -15,4 +17,5 @@ export{
     bot,
     robot,
     send,
+    farmerQutoes
 }

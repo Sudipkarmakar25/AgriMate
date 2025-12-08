@@ -69,8 +69,8 @@ Now give the remedies:
     });
 
     // 6️⃣ Save to DB
-    chat.messages.push(reply);
-    await chat.save();
+    Chat.messages.push(reply);
+    await Chat.save();
     console.log("💾 Remedies saved in chat.");
 
   } catch (error) {

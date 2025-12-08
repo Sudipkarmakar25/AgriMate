@@ -1,37 +1,39 @@
-import React, { useState, useRef } from 'react';
-import { 
-  Camera, 
-  Upload, 
-  X, 
-  ScanLine, 
-  Bug, 
-  Sprout, 
-  CheckCircle2, 
-  AlertTriangle, 
+import React, { useState, useRef } from "react";
+import {
+  Camera,
+  Upload,
+  X,
+  ScanLine,
+  Bug,
+  Sprout,
+  CheckCircle2,
+  AlertTriangle,
   Loader2,
   ArrowRight,
   RefreshCw,
-  ArrowLeft
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+  ArrowLeft,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const MOCK_RESULT = {
   pestName: "Fall Armyworm",
   confidence: 94,
   severity: "High",
-  description: "The Fall Armyworm is a destructive pest that attacks maize and other crops. It feeds on leaves, creating ragged holes and leaving sawdust-like excrement.",
+  description:
+    "The Fall Armyworm is a destructive pest that attacks maize and other crops. It feeds on leaves, creating ragged holes and leaving sawdust-like excrement.",
   remedies: [
     "Apply Neem oil (5ml/liter) or Beauveria bassiana as a bio-control.",
     "Install pheromone traps @ 5-10/acre to monitor moth activity.",
     "If infestation is severe, spray Emamectin Benzoate 5% SG (0.4g/liter).",
-    "Handpick and destroy egg masses and larvae in early stages."
-  ]
+    "Handpick and destroy egg masses and larvae in early stages.",
+  ],
 };
 
 const PestDetection = () => {
   const [selectedImage, setSelectedImage] = useState(null);
-  const [file,setFile] = useState(null);
+  const [file, setFile] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -46,8 +48,8 @@ const PestDetection = () => {
   };
 
   const processFile = (file) => {
-    if (!file.type.startsWith('image/')) return;
-    setFile(file)
+    if (!file.type.startsWith("image/")) return;
+    setFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       setSelectedImage(e.target.result);
@@ -56,27 +58,32 @@ const PestDetection = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleAnalyze = async() => {
-    setIsAnalyzing(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await axios.post(
-      "https://developersa-plantdiseasefastapi.hf.space/predict",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data"
+  const handleAnalyze = async () => {
+    try {
+      setIsAnalyzing(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post(
+        "https://DeveloperSA-PlantDiseaseFastAPI.hf.space/predict",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
+      );
+      if (response.status == 200) {
+        setResult(response.data);
+      } else {
+        setTimeout(() => {
+          setIsAnalyzing(false);
+          setResult(MOCK_RESULT);
+        }, 2500);
       }
-    );
-    console.log(response);
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      setResult(MOCK_RESULT);
-    }, 2500);
+    } catch (error) {
+      toast.error(error.response?.data?.error || error.message);
+    }
   };
-
-
 
   const handleReset = () => {
     setSelectedImage(null);
@@ -107,7 +114,7 @@ const PestDetection = () => {
         {/* Top bar with back button */}
         <div className="flex items-center justify-between mb-4">
           <button
-            onClick={()=>navigate(-1)}
+            onClick={() => navigate(-1)}
             className="inline-flex items-center gap-2 text-sm sm:text-base px-3 py-2 rounded-full bg-white/90 border border-emerald-100 shadow-sm hover:bg-emerald-50 active:scale-95 transition"
           >
             <ArrowLeft className="h-4 w-4 text-emerald-700" />
@@ -124,7 +131,8 @@ const PestDetection = () => {
             AI Pest Detector
           </h1>
           <p className="mt-2 text-sm sm:text-base text-emerald-800/80 max-w-2xl mx-auto">
-            Take a photo or upload an image of your crop. Our AI will identify pests and recommend immediate, farmer-friendly solutions.
+            Take a photo or upload an image of your crop. Our AI will identify
+            pests and recommend immediate, farmer-friendly solutions.
           </p>
         </div>
 
@@ -138,9 +146,10 @@ const PestDetection = () => {
             {!selectedImage && (
               <div
                 className={`border-2 border-dashed rounded-2xl min-h-[260px] sm:h-80 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 px-4
-                  ${isDragging 
-                    ? 'border-emerald-500 bg-emerald-50/80 shadow-inner' 
-                    : 'border-emerald-200/70 bg-gradient-to-br from-white via-emerald-50/30 to-lime-50/60 hover:border-emerald-400 hover:bg-emerald-50/60'
+                  ${
+                    isDragging
+                      ? "border-emerald-500 bg-emerald-50/80 shadow-inner"
+                      : "border-emerald-200/70 bg-gradient-to-br from-white via-emerald-50/30 to-lime-50/60 hover:border-emerald-400 hover:bg-emerald-50/60"
                   }`}
                 onDragOver={onDragOver}
                 onDragLeave={onDragLeave}
@@ -175,17 +184,19 @@ const PestDetection = () => {
             {selectedImage && !result && (
               <div className="flex flex-col items-center">
                 <div className="relative w-full max-w-xs sm:max-w-md aspect-square rounded-2xl overflow-hidden shadow-xl border border-emerald-100 mb-6 sm:mb-8 bg-emerald-900 mx-auto">
-                  <img 
-                    src={selectedImage} 
-                    alt="Crop Preview" 
-                    className={`w-full h-full object-cover transition-opacity ${isAnalyzing ? 'opacity-50' : 'opacity-100'}`} 
+                  <img
+                    src={selectedImage}
+                    alt="Crop Preview"
+                    className={`w-full h-full object-cover transition-opacity ${
+                      isAnalyzing ? "opacity-50" : "opacity-100"
+                    }`}
                   />
 
                   {/* corner gradient overlay */}
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-emerald-900/10" />
 
                   {!isAnalyzing && (
-                    <button 
+                    <button
                       onClick={handleReset}
                       className="absolute top-3 right-3 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors backdrop-blur-sm border border-white/20"
                     >
@@ -212,13 +223,13 @@ const PestDetection = () => {
 
                 {!isAnalyzing && (
                   <div className="w-full max-w-xs sm:max-w-md grid grid-cols-2 gap-3 sm:gap-4">
-                    <button 
+                    <button
                       onClick={handleReset}
                       className="px-4 py-2.5 sm:py-3 border border-emerald-200 text-sm sm:text-base text-emerald-900 font-semibold rounded-xl bg-white hover:bg-emerald-50 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2"
                     >
                       Retake
                     </button>
-                    <button 
+                    <button
                       onClick={handleAnalyze}
                       className="px-4 py-2.5 sm:py-3 bg-gradient-to-r from-emerald-600 to-lime-500 text-white text-sm sm:text-base font-bold rounded-xl shadow-lg hover:from-emerald-700 hover:to-lime-600 hover:shadow-xl transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2"
                     >
@@ -233,11 +244,15 @@ const PestDetection = () => {
             {/* 3. Result */}
             {result && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+                <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
                   {/* Left: Image */}
-                  <div className="md:w-1/3 flex flex-col gap-3 sm:gap-4">
+                  <div className="md:w-1/3 flex flex-col gap-3 sm:gap-4 w-full">
                     <div className="aspect-square rounded-2xl overflow-hidden shadow-lg border border-emerald-100 relative w-full max-w-xs md:max-w-none mx-auto md:mx-0 bg-emerald-900">
-                      <img src={selectedImage} alt="Analyzed Crop" className="w-full h-full object-cover" />
+                      <img
+                        src={selectedImage}
+                        alt="Analyzed Crop"
+                        className="w-full h-full object-cover"
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                       <div className="absolute bottom-0 inset-x-0 bg-black/50 p-2 text-center backdrop-blur-sm border-t border-white/10">
                         <span className="text-emerald-50 text-xs font-medium">
@@ -245,7 +260,7 @@ const PestDetection = () => {
                         </span>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={handleReset}
                       className="w-full py-2.5 flex items-center justify-center gap-2 text-sm sm:text-base text-emerald-900 bg-gradient-to-r from-emerald-50 to-lime-50 hover:from-emerald-100 hover:to-lime-100 rounded-xl font-medium transition-colors border border-emerald-100 shadow-sm"
                     >
@@ -255,7 +270,7 @@ const PestDetection = () => {
                   </div>
 
                   {/* Right: Details */}
-                  <div className="md:w-2/3 space-y-5 sm:space-y-6">
+                  <div className="md:w-2/3 space-y-5 sm:space-y-6 w-full">
                     {/* Diagnosis */}
                     <div className="rounded-2xl overflow-hidden border border-red-100 shadow-sm bg-gradient-to-br from-rose-50 via-red-50 to-orange-50">
                       <div className="h-1 w-full bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400" />
@@ -266,28 +281,16 @@ const PestDetection = () => {
                               Detected Issue
                             </p>
                             <h2 className="text-2xl sm:text-3xl font-extrabold text-red-950 break-words">
-                              {result.pestName}
+                              {result.disease_name}
                             </h2>
                           </div>
                           <div className="text-left sm:text-right space-y-1">
                             <div className="inline-flex items-center gap-1 bg-white/80 px-3 py-1 rounded-full shadow-sm border border-red-100">
                               <AlertTriangle className="h-4 w-4 text-orange-500" />
                               <span className="text-xs sm:text-sm font-bold text-red-900">
-                                {result.confidence}% Match
+                                {Math.round(Number(result.confidence) * 100)}% Match
                               </span>
                             </div>
-                            <p className="text-xs text-red-900/80">
-                              Severity:{' '}
-                              <span
-                                className={`font-semibold px-2 py-0.5 rounded-full text-[11px] sm:text-xs ${
-                                  result.severity === 'High'
-                                    ? 'bg-red-100 text-red-700 border border-red-200'
-                                    : 'bg-amber-100 text-amber-700 border border-amber-200'
-                                }`}
-                              >
-                                {result.severity}
-                              </span>
-                            </p>
                           </div>
                         </div>
                         <p className="mt-2 sm:mt-3 text-sm sm:text-base text-red-900/90 leading-relaxed">
@@ -305,28 +308,62 @@ const PestDetection = () => {
                         Farmer-friendly Recommended Actions
                       </h3>
                       <div className="bg-gradient-to-br from-emerald-50 via-white to-lime-50 rounded-2xl border border-emerald-100 shadow-sm overflow-hidden">
-                        <ul className="divide-y divide-emerald-100/80">
-                          {result.remedies.map((remedy, idx) => (
-                            <li 
-                              key={idx} 
-                              className="p-3 sm:p-4 flex gap-3 hover:bg-emerald-50/60 transition-colors odd:bg-white/60 even:bg-emerald-50/40"
-                            >
-                              <div className="mt-0.5 flex-shrink-0">
-                                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                        <div className="p-4 sm:p-6 flex flex-col gap-4">
+                          {/* Cause */}
+                          <div className="flex flex-col gap-2 bg-white/70 rounded-xl p-4 border border-emerald-100">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="p-1.5 rounded-full bg-red-50 border border-red-100">
+                                <Bug className="h-4 w-4 text-red-600" />
                               </div>
-                              <span className="text-sm sm:text-base text-emerald-950/90">
-                                {remedy}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
+                              <h4 className="text-sm sm:text-base font-semibold text-emerald-900">
+                                Cause
+                              </h4>
+                            </div>
+                            <p className="text-xs sm:text-sm text-emerald-950/90 leading-relaxed">
+                              {result.cause ||
+                                "This disease is caused due to high humidity, infected crop residue and poor field sanitation."}
+                            </p>
+                          </div>
+
+                          {/* Prevention */}
+                          <div className="flex flex-col gap-2 bg-white/70 rounded-xl p-4 border border-emerald-100">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="p-1.5 rounded-full bg-emerald-50 border border-emerald-100">
+                                <Sprout className="h-4 w-4 text-emerald-700" />
+                              </div>
+                              <h4 className="text-sm sm:text-base font-semibold text-emerald-900">
+                                Prevention
+                              </h4>
+                            </div>
+                            <p className="text-xs sm:text-sm text-emerald-950/90 leading-relaxed">
+                              {result.prevention ||
+                                "Use healthy seeds, rotate crops, practice clean cultivation, and apply recommended bio-fungicides."}
+                            </p>
+                          </div>
+
+                          {/* Solution */}
+                          <div className="flex flex-col gap-2 bg-white/70 rounded-xl p-4 border border-emerald-100">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="p-1.5 rounded-full bg-amber-50 border border-amber-100">
+                                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                              </div>
+                              <h4 className="text-sm sm:text-base font-semibold text-emerald-900">
+                                Solution
+                              </h4>
+                            </div>
+                            <p className="text-xs sm:text-sm text-emerald-950/90 leading-relaxed">
+                              {result.solution ||
+                                "Remove infected leaves, avoid overhead irrigation, and follow recommended pesticide spray schedule."}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
                     {/* CTA */}
                     <div className="pt-1 sm:pt-2">
                       <button className="inline-flex items-center text-sm sm:text-base text-emerald-700 font-semibold hover:text-emerald-900 hover:underline decoration-emerald-500">
-                        View detailed advisory for {result.pestName}
+                        View detailed advisory for {result.disease_name}
                         <ArrowRight className="h-4 w-4 ml-1" />
                       </button>
                     </div>
@@ -334,7 +371,6 @@ const PestDetection = () => {
                 </div>
               </div>
             )}
-
           </div>
         </div>
       </div>
@@ -356,4 +392,4 @@ const PestDetection = () => {
 };
 
 export default PestDetection;
-``
+``;

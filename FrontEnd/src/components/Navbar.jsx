@@ -27,7 +27,6 @@ const Navbar = () => {
 
   const navLinks = [
     { href: "/advisory", label: "Crop Advisory" },
-    { href: "#", label: "Soil Health" },
     { href: "/pest-detection", label: "Pest Detection" },
     { href: "/weather", label: "Weather" },
     {
@@ -247,19 +246,6 @@ const Navbar = () => {
                     >
                       <ArrowRight className="w-4 h-4 mr-2" /> My Plots
                     </button>
-                    <button
-                      onClick={() => navigate("/")}
-                      className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      <User className="w-4 h-4 mr-2" /> Profile
-                    </button>
-                    <button
-                      onClick={() => navigate("/")}
-                      className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      <Settings className="w-4 h-4 mr-2" /> Settings
-                    </button>
-                    <div className="border-t my-1" />
                     <button
                       onClick={handleLogout}
                       className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"

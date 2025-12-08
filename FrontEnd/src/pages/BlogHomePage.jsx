@@ -10,6 +10,7 @@ import {
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const formatDate = (isoString) => {
   if (!isoString) return "N/A";
@@ -26,7 +27,6 @@ const fetchPosts = async (setPosts) => {
     const res = await axios.get("http://localhost:3693/api/v1/community/posts");
     if (res.data.success) {
       setPosts(res.data.posts);
-      console.log(res.data.posts);
     }
   } catch (error) {
     toast.error(error.response?.data?.error || error.message);
@@ -40,6 +40,7 @@ export default function BlogHomePage() {
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const authStatus = useSelector((state) => state.auth.status);
+  const navigate = useNavigate();
 
   const featuredPost = posts[0];
   const recentPosts = posts.slice(1);
@@ -90,8 +91,6 @@ export default function BlogHomePage() {
       fetchPosts(setPosts);
       }
     } catch (error) {
-        console.log(error);
-        
       toast.error(error.response?.data?.error || error.message);
     }
   };
@@ -162,7 +161,7 @@ export default function BlogHomePage() {
                   <Calendar className="h-4 w-4" />
                   <span>{formatDate(featuredPost.createdAt)}</span>
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4 leading-tight feature-title">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4 leading-tight feature-title  line-clamp-3">
                   {featuredPost.text}
                 </h3>
                 <div className="flex items-center justify-between mt-auto">
@@ -174,7 +173,7 @@ export default function BlogHomePage() {
                       {featuredPost.farmer.name}
                     </span>
                   </div>
-                  <button className="flex items-center gap-2 text-green-600 font-bold hover:text-green-700 transition-colors">
+                  <button onClick={()=>navigate(`/blog-page/${featuredPost._id}`)} className="flex items-center gap-2 text-green-600 font-bold hover:text-green-700 transition-colors">
                     Read Article <ArrowRight className="h-5 w-5" />
                   </button>
                 </div>
@@ -222,7 +221,7 @@ export default function BlogHomePage() {
                     <User className="h-3 w-3" />
                     {post.farmer.name}
                   </div>
-                  <button className="text-green-600 hover:text-green-800 text-sm font-semibold flex items-center gap-1">
+                  <button onClick={()=>navigate(`/blog-page/${post._id}`)} className="text-green-600 hover:text-green-800 text-sm font-semibold flex items-center gap-1">
                     Read <ArrowRight className="h-3 w-3" />
                   </button>
                 </div>

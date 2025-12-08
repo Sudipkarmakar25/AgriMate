@@ -6,6 +6,7 @@ import Weather from "./Weather.jsx";
 import CropAdvisory from "./CropAdvisory.jsx";
 import PestDetection from "./PestDetection.jsx";
 import BlogHomePage from "./BlogHomePage.jsx";
+import BlogPostPage from "./BlogPostPage.jsx";
 
 
 export{
@@ -16,5 +17,6 @@ export{
     Weather,
     CropAdvisory,
     PestDetection,
-    BlogHomePage
+    BlogHomePage,
+    BlogPostPage
 }

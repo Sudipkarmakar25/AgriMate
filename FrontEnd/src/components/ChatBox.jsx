@@ -39,7 +39,7 @@ const ChatBox = ({ selectedChat }) => {
     console.log("inside try 33");
 
     const response = await axios.post(
-      `http://localhost:3693/api/v1/message/text`,
+      `http://localhost:3693/api/v1/message/${mode}`,
       { chatId: selectedChat._id, prompt: promptCopy },
       { withCredentials: true }
     );

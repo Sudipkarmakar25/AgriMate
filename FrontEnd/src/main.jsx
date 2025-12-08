@@ -14,6 +14,7 @@ import {
   CropAdvisory,
   PestDetection,
   BlogHomePage,
+  BlogPostPage
 } from "./pages/index.js";
 
 import Navbar from "./components/Navbar.jsx";
@@ -81,6 +82,7 @@ const router = createBrowserRouter([
       { path: "/pest-detection", element: <PestDetection /> },
       { path: "/chatbot", element: <ChatBot /> },
       { path: "/blog-home", element: <BlogHomePage /> },
+      { path : "/blog-page/:id",element:<BlogPostPage/>}
     ],
   },
 ]);

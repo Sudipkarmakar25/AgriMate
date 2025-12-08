@@ -61,7 +61,7 @@ const PestDetection = () => {
     const formData = new FormData();
     formData.append("file", file);
     const response = await axios.post(
-      "https://untoured-bifacial-vaughn.ngrok-free.dev/predict",
+      "https://developersa-plantdiseasefastapi.hf.space/predict",
       formData,
       {
         headers: {

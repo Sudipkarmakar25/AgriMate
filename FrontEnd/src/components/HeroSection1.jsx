@@ -102,63 +102,11 @@ const HeroSection1 = () => {
 
   const partners = ["RICE", "FARM", "FARM VAY", "FOOD", "ECO HARVEST", "AGRO"];
 
-  // const posts = [
-  //   {
-  //     img: "https://placehold.co/600x400/a3e635/ffffff?text=Vertical+Farming&font=merriweather",
-  //     category: "Farming",
-  //     date: "Oct 28, 2025",
-  //     title: "What technology is used in vertical farming?",
-  //   },
-  //   {
-  //     img: "https://placehold.co/600x400/5a6a4a/ffffff?text=Modern+Farming&font=merriweather",
-  //     category: "Technology",
-  //     date: "Oct 27, 2025",
-  //     title: "Which type of farming is more prevalent today?",
-  //   },
-  //   {
-  //     img: "https://placehold.co/600x400/9ca3af/ffffff?text=Farm+Animal&font=merriweather",
-  //     category: "Animals",
-  //     date: "Oct 26, 2025",
-  //     title: "The Farmtory Sentiment Defies(n) Hopes Fade",
-  //   },
-  // ];
-
   useEffect(() => {
     fetchPosts(setPosts);
-  },[]);
+  }, []);
   return (
     <>
-      {/* 🌾 Products Section */}
-      <section className="py-16 sm:py-24 bg-gradient-to-b from-lime-50 via-white to-emerald-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-12">
-            Anyone Can Make Eco-Friendly Products From Scratch
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
-            {products.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.title}
-                  className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 hover:scale-105 border-gray-500 border-2"
-                >
-                  <div className="bg-lime-100 w-16 h-16 mx-auto flex items-center justify-center rounded-full mb-4">
-                    <Icon className="h-8 w-8 text-lime-700" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 text-gray-600 text-sm">
-                    {item.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* 🌱 Banner Section */}
       <section className="relative bg-gradient-to-r from-emerald-900 via-green-800 to-lime-800 py-20 text-white">
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="relative z-10 max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between text-center md:text-left">
@@ -167,59 +115,16 @@ const HeroSection1 = () => {
               <ShieldCheck className="h-12 w-12 text-lime-300" />
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold ml-4">
-              We're global leaders in the agriculture market
+              We’re building powerful AI solutions that make farming smarter and
+              easier.
             </h2>
           </div>
-          <a
-            href="#"
-            className="mt-8 md:mt-0 px-8 py-3 rounded-full bg-white text-emerald-700 font-semibold hover:bg-gray-100 transition-transform transform hover:scale-105 shadow-md"
+          <button
+            onClick={() => navigate("/add-plot")}
+            className="mt-8 md:mt-0 px-8 py-3 rounded-full bg-white text-emerald-700 font-semibold hover:bg-gray-100 transition-transform transform hover:scale-105 shadow-md inline-flex items-center justify-center"
           >
-            Discover More
-          </a>
-        </div>
-      </section>
-
-      {/* 👨‍🌾 Farmers Section */}
-      <section className="py-16 sm:py-24 bg-gradient-to-b from-emerald-50 to-white">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900 mb-12">
-            Meet The Farmers
-          </h2>
-          <div className="flex overflow-x-auto space-x-8 pb-4 scrollbar-hide">
-            {farmers.map((farmer) => (
-              <div
-                key={farmer.name}
-                className="flex-shrink-0 w-56 bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300"
-              >
-                <img
-                  src={farmer.img}
-                  alt={farmer.name}
-                  className="w-40 h-40 rounded-full mx-auto object-cover shadow-md"
-                />
-                <h3 className="mt-4 text-lg font-semibold text-gray-900">
-                  {farmer.name}
-                </h3>
-                <p className="text-emerald-600 text-sm">{farmer.title}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 🌾 Partners */}
-      <section className="py-14 bg-gradient-to-r from-lime-300 via-white to-emerald-200">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="flex flex-wrap justify-center items-center gap-8">
-            {partners.map((partner) => (
-              <span
-                key={partner}
-                className="text-2xl sm:text-3xl font-bold text-gray-400 hover:text-emerald-700 transition-all duration-300"
-                style={{ fontFamily: "Merriweather, serif" }}
-              >
-                {partner}
-              </span>
-            ))}
-          </div>
+            Start Now
+          </button>
         </div>
       </section>
 
@@ -292,7 +197,9 @@ const HeroSection1 = () => {
                     />
                   ) : (
                     <img
-                      src={'https://www.mountainmotorvehicles.co.uk/wp-content/uploads/2024/05/No-image-available-2.jpg'}
+                      src={
+                        "https://www.mountainmotorvehicles.co.uk/wp-content/uploads/2024/05/No-image-available-2.jpg"
+                      }
                       alt="image not available"
                       className="w-full h-56 object-fit"
                     />

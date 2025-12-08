@@ -1,66 +1,100 @@
 import React from "react";
 import {
   Leaf,
-  TestTube2,
   Bug,
   Wind,
   TrendingUp,
   Check,
   CalendarCheck,
   UserCheck,
-  Package,
+  Ruler,
+  Users
 } from "lucide-react";
-import { farmingFeild, crop, farming,tractor } from "../assets/index.js";
-
-function FeatureCard({ icon, title, href }) {
-  const Icon = icon;
-  return (
-    <a
-      href={href}
-      className="flex flex-col items-center text-center p-4 group transition-all duration-300 hover:scale-105"
-    >
-      <div className="bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full p-8 shadow-lg group-hover:shadow-2xl transition-all duration-300">
-        <Icon className="h-14 w-14 text-emerald-600 group-hover:text-emerald-500 transition-all duration-300" />
-      </div>
-      <h3 className="text-lg md:text-xl font-semibold text-gray-800 mt-5 group-hover:text-emerald-700 transition-all">
-        {title}
-      </h3>
-    </a>
-  );
-}
+import { crop, farming,tractor } from "../assets/index.js";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
+  const navigate= useNavigate();
+
   const features = [
-    { icon: Leaf, title: "Crop Advisory", href: "#" },
-    { icon: TestTube2, title: "Soil Health", href: "#" },
-    { icon: Bug, title: "Pest Detection", href: "#" },
-    { icon: Wind, title: "Weather", href: "#" },
-    { icon: TrendingUp, title: "Market Prices", href: "#" },
+    { icon: Leaf, title: "Crop Advisory", href: "/advisory" },
+    { icon: Bug, title: "Pest Detection", href: "/pest-detection" },
+    { icon: Wind, title: "Weather", href: "/weather" },
+    { icon: TrendingUp, title: "Govt.Schemes", href: "https://www.myscheme.gov.in/search/category/Agriculture,Rural%20&%20Environment" },
   ];
+
+  function FeatureCard({ icon, title, href }) {
+    const Icon = icon;
+    if (title==="Govt.Schemes") {
+      return(
+       
+          <a
+            href={href}
+            target="_blank"
+            className="flex flex-col items-center text-center p-4 group transition-all duration-300 hover:scale-105"
+          >
+            <div className="bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full p-8 shadow-lg group-hover:shadow-2xl transition-all duration-300">
+              <Icon className="h-14 w-14 text-emerald-600 group-hover:text-emerald-500 transition-all duration-300" />
+            </div>
+            <h3 className="text-lg md:text-xl font-semibold text-gray-800 mt-5 group-hover:text-emerald-700 transition-all">
+              {title}
+            </h3>
+          </a>
+      )
+    }
+    return (
+      <a
+        onClick={()=>navigate(href)}
+        className="flex flex-col items-center text-center p-4 group transition-all duration-300 hover:scale-105"
+      >
+        <div className="bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full p-8 shadow-lg group-hover:shadow-2xl transition-all duration-300">
+          <Icon className="h-14 w-14 text-emerald-600 group-hover:text-emerald-500 transition-all duration-300" />
+        </div>
+        <h3 className="text-lg md:text-xl font-semibold text-gray-800 mt-5 group-hover:text-emerald-700 transition-all">
+          {title}
+        </h3>
+      </a>
+    );
+  }
 
   const steps = [
     {
       icon: CalendarCheck,
       step: "Step 01",
-      title: "Schedule Your Advisory",
+      title: "Add Your Plot",
       description:
-        "Get a one-on-one session with our top agricultural experts at your convenience.",
+        "Start by adding your farmland details including crop type, area, soil type and location.",
     },
     {
       icon: UserCheck,
       step: "Step 02",
-      title: "Meet Our Expert",
+      title: "Get Daily Advisory",
       description:
-        "Our expert will analyze your soil, crops, and conditions to provide a tailored plan.",
+        "Receive AI-powered advisory for your crop based on weather, soil and growth conditions.",
     },
     {
-      icon: Package,
+      icon: Ruler,
       step: "Step 03",
-      title: "Now Get The Best Product",
+      title: "Check Plot Weather",
       description:
-        "Receive recommendations for the best seeds, fertilizers, and products for your farm.",
+        "See accurate weather predictions like rainfall, humidity, wind and temperature for your plot location.",
+    },
+    {
+      icon: Bug,
+      step: "Step 04",
+      title: "Detect Crop Pest",
+      description:
+        "Upload a crop image and detect pest or disease instantly with suggested remedies.",
+    },
+    {
+      icon: Users,
+      step: "Step 05",
+      title: "Farmer Community",
+      description:
+        "Share your experience and learn from other farmers through the community forum.",
     },
   ];
+  
 
   return (
     <div className="font-sans">

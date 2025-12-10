@@ -8,43 +8,46 @@ import {
   CalendarCheck,
   UserCheck,
   Ruler,
-  Users
+  Users,
 } from "lucide-react";
-import { crop, farming,tractor } from "../assets/index.js";
+import { crop, farming, tractor } from "../assets/index.js";
 import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
-  const navigate= useNavigate();
+  const navigate = useNavigate();
 
   const features = [
     { icon: Leaf, title: "Crop Advisory", href: "/advisory" },
     { icon: Bug, title: "Pest Detection", href: "/pest-detection" },
     { icon: Wind, title: "Weather", href: "/weather" },
-    { icon: TrendingUp, title: "Govt.Schemes", href: "https://www.myscheme.gov.in/search/category/Agriculture,Rural%20&%20Environment" },
+    {
+      icon: TrendingUp,
+      title: "Govt.Schemes",
+      href: "https://www.myscheme.gov.in/search/category/Agriculture,Rural%20&%20Environment",
+    },
   ];
 
   function FeatureCard({ icon, title, href }) {
     const Icon = icon;
-    if (title==="Govt.Schemes") {
-      return(
-       
-          <a
-            href={href}
-            target="_blank"
-            className="flex flex-col items-center text-center p-4 group transition-all duration-300 hover:scale-105"
-          >
-            <div className="bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full p-8 shadow-lg group-hover:shadow-2xl transition-all duration-300">
-              <Icon className="h-14 w-14 text-emerald-600 group-hover:text-emerald-500 transition-all duration-300" />
-            </div>
-            <h3 className="text-lg md:text-xl font-semibold text-gray-800 mt-5 group-hover:text-emerald-700 transition-all">
-              {title}
-            </h3>
-          </a>
-      )
+    if (title === "Govt.Schemes") {
+      return (
+        <a
+          href={href}
+          target="_blank"
+          className="flex flex-col items-center text-center p-4 group transition-all duration-300 hover:scale-105"
+        >
+          <div className="bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full p-8 shadow-lg group-hover:shadow-2xl transition-all duration-300">
+            <Icon className="h-14 w-14 text-emerald-600 group-hover:text-emerald-500 transition-all duration-300" />
+          </div>
+          <h3 className="text-lg md:text-xl font-semibold text-gray-800 mt-5 group-hover:text-emerald-700 transition-all">
+            {title}
+          </h3>
+        </a>
+      );
     }
     return (
       <a
-        onClick={()=>navigate(href)}
+        onClick={() => navigate(href)}
         className="flex flex-col items-center text-center p-4 group transition-all duration-300 hover:scale-105"
       >
         <div className="bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full p-8 shadow-lg group-hover:shadow-2xl transition-all duration-300">
@@ -94,7 +97,6 @@ const HeroSection = () => {
         "Share your experience and learn from other farmers through the community forum.",
     },
   ];
-  
 
   return (
     <div className="font-sans">
@@ -108,19 +110,27 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/30"></div>
         <div className="relative z-10 text-center px-4 sm:px-8">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
-           Empowering Farmers with Smart Agriculture Solutions
+            Empowering Farmers with Smart Agriculture Solutions
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-200 max-w-2xl mx-auto">
-          Get personalized crop advice, real-time weather updates, soil health insights,
-          and pest detection — all in one place to help you grow better and smarter.
+            Get personalized crop advice, real-time weather updates, soil health
+            insights, and pest detection — all in one place to help you grow
+            better and smarter.
           </p>
-          <div className="mt-10">
-            <a
-              href="#"
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              onClick={() => navigate("/add-plot")}
               className="px-8 py-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold text-lg shadow-lg hover:from-emerald-600 hover:to-teal-700 transition-all transform hover:scale-105"
             >
               Get Started
-            </a>
+            </button>
+
+            <button
+              onClick={() => navigate("/blog-home")}
+             className="px-8 py-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold text-lg shadow-lg hover:from-emerald-600 hover:to-teal-700 transition-all transform hover:scale-105"
+            >
+              Farmer Community
+            </button>
           </div>
         </div>
       </header>
@@ -128,7 +138,7 @@ const HeroSection = () => {
       {/* FEATURES SECTION */}
       <section className="bg-gradient-to-b from-white to-emerald-50 py-16 sm:py-24 px-6 sm:px-10 overflow-hidden">
         <h2 className="text-3xl md:text-4xl font-extrabold text-center text-gray-900 mb-14">
-        Our Best Agricultural Services
+          Our Best Agricultural Services
         </h2>
 
         <div className="relative w-full overflow-hidden">

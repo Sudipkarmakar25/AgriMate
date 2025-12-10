@@ -44,7 +44,6 @@ const PestDetection = () => {
   const [advisory, setAdvisory] = useState(null);
   const [isAdvisoryLoading, setIsAdvisoryLoading] = useState(false);
 
-
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -128,25 +127,53 @@ const PestDetection = () => {
       toast.error("Disease name not found. Please analyze again.");
       return;
     }
-    
 
     try {
       setIsAdvisoryLoading(true);
       setAdvisory(null);
 
-      // 🔁 Change this URL & payload to match your backend route
       const response = await axios.post(
         "http://localhost:3693/api/v1/message/remedy",
         {
-          diseaseName: result.disease_name,
+          disease: result.disease_name,
         },
-        {withCredentials: true}
+        { withCredentials: true }
       );
 
-      // Assume API returns { advisory: "long text..." } or similar
-      setAdvisory(response.data);
-      console.log(response);
-      
+      let content = response.data.reply.content; // full text from LLM
+
+      // 1️⃣ Extract the JSON block: { "disease": "...", "remedies": "..." }
+      const jsonMatch = content.match(/\{[\s\S]*?\}/);
+      if (!jsonMatch) {
+        // fallback: just show raw text
+        setAdvisory({ raw: content });
+        return;
+      }
+
+      let jsonObj;
+      try {
+        jsonObj = JSON.parse(jsonMatch[0]);
+      } catch (e) {
+        setAdvisory({ raw: content });
+        return;
+      }
+
+      // 2️⃣ Convert remedies string -> array
+      // "1. Remove..., 2. Use neem oil..." -> [ "Remove...", "Use neem oil...", ... ]
+      const remediesArray = jsonObj.remedies
+        .split(",")
+        .map((item) =>
+          item
+            .replace(/^\s*\d+\.\s*/, "") // remove "1. ", "2. " etc
+            .trim()
+        )
+        .filter(Boolean);
+
+      // 3️⃣ Store a clean object in state
+      setAdvisory({
+        disease: jsonObj.disease,
+        remedies: remediesArray,
+      });
     } catch (error) {
       toast.error(
         error.response?.data?.error ||
@@ -338,7 +365,8 @@ const PestDetection = () => {
                             <div className="inline-flex items-center gap-1 bg-white/80 px-3 py-1 rounded-full shadow-sm border border-red-100">
                               <AlertTriangle className="h-4 w-4 text-orange-500" />
                               <span className="text-xs sm:text-sm font-bold text-red-900">
-                                {Math.round(Number(result.confidence) * 100)}% Match
+                                {Math.round(Number(result.confidence) * 100)}%
+                                Match
                               </span>
                             </div>
                           </div>
@@ -413,7 +441,7 @@ const PestDetection = () => {
                     {/* CTA + Advisory */}
                     <div className="pt-1 sm:pt-2 space-y-3">
                       <button
-                        onClick={()=>handleFetchAdvisory(result.disease_name)}
+                        onClick={() => handleFetchAdvisory(result.disease_name)}
                         disabled={isAdvisoryLoading}
                         className="inline-flex items-center text-sm sm:text-base text-emerald-700 font-semibold hover:text-emerald-900 hover:underline decoration-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed"
                       >
@@ -428,13 +456,32 @@ const PestDetection = () => {
                           <h3 className="text-sm sm:text-base font-bold text-emerald-900 mb-2">
                             Detailed Advisory
                           </h3>
-                          <p className="text-xs sm:text-sm text-emerald-950 leading-relaxed whitespace-pre-line">
-                            {/* Adjust according to actual response shape */}
-                            {advisory.advisory ||
-                              advisory.details ||
-                              advisory.message ||
-                              JSON.stringify(advisory, null, 2)}
-                          </p>
+
+                          {/* If we parsed it properly */}
+                          {advisory.remedies ? (
+                            <div className="text-xs sm:text-sm text-emerald-950 leading-relaxed">
+                              <p className="font-semibold mb-2">
+                                Disease: {advisory.disease}
+                              </p>
+                              <p className="font-semibold">
+                                Recommended Remedies:
+                              </p>
+                              <ul className="list-disc ml-5 mt-1 space-y-1">
+                                {advisory.remedies.map((remedy, index) => (
+                                  <li key={index}>{remedy}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          ) : (
+                            // Fallback: if we couldn't parse JSON, show raw text
+                            <p className="text-xs sm:text-sm text-emerald-950 whitespace-pre-line">
+                              {advisory.raw ||
+                                advisory.advisory ||
+                                advisory.details ||
+                                advisory.message ||
+                                JSON.stringify(advisory, null, 2)}
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>

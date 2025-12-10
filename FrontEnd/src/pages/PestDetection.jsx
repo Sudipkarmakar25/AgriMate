@@ -40,6 +40,10 @@ const PestDetection = () => {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
+  // NEW: advisory states
+  const [advisory, setAdvisory] = useState(null);
+  const [isAdvisoryLoading, setIsAdvisoryLoading] = useState(false);
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -54,13 +58,20 @@ const PestDetection = () => {
     reader.onload = (e) => {
       setSelectedImage(e.target.result);
       setResult(null);
+      setAdvisory(null); // clear previous advisory when new image selected
     };
     reader.readAsDataURL(file);
   };
 
   const handleAnalyze = async () => {
     try {
+      if (!file) {
+        toast.error("Please select an image first.");
+        return;
+      }
       setIsAnalyzing(true);
+      setAdvisory(null); // clear advisory when re-analyzing
+
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
@@ -72,16 +83,17 @@ const PestDetection = () => {
           },
         }
       );
-      if (response.status == 200) {
+      if (response.status === 200) {
         setResult(response.data);
       } else {
         setTimeout(() => {
-          setIsAnalyzing(false);
           setResult(MOCK_RESULT);
         }, 2500);
       }
     } catch (error) {
       toast.error(error.response?.data?.error || error.message);
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -89,6 +101,7 @@ const PestDetection = () => {
     setSelectedImage(null);
     setResult(null);
     setIsAnalyzing(false);
+    setAdvisory(null);
   };
 
   const onDragOver = (e) => {
@@ -106,6 +119,70 @@ const PestDetection = () => {
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
     if (file) processFile(file);
+  };
+
+  // NEW: fetch detailed advisory when CTA button is clicked
+  const handleFetchAdvisory = async () => {
+    if (!result?.disease_name) {
+      toast.error("Disease name not found. Please analyze again.");
+      return;
+    }
+
+    try {
+      setIsAdvisoryLoading(true);
+      setAdvisory(null);
+
+      const response = await axios.post(
+        "http://localhost:3693/api/v1/message/remedy",
+        {
+          disease: result.disease_name,
+        },
+        { withCredentials: true }
+      );
+
+      let content = response.data.reply.content; // full text from LLM
+
+      // 1️⃣ Extract the JSON block: { "disease": "...", "remedies": "..." }
+      const jsonMatch = content.match(/\{[\s\S]*?\}/);
+      if (!jsonMatch) {
+        // fallback: just show raw text
+        setAdvisory({ raw: content });
+        return;
+      }
+
+      let jsonObj;
+      try {
+        jsonObj = JSON.parse(jsonMatch[0]);
+      } catch (e) {
+        setAdvisory({ raw: content });
+        return;
+      }
+
+      // 2️⃣ Convert remedies string -> array
+      // "1. Remove..., 2. Use neem oil..." -> [ "Remove...", "Use neem oil...", ... ]
+      const remediesArray = jsonObj.remedies
+        .split(",")
+        .map((item) =>
+          item
+            .replace(/^\s*\d+\.\s*/, "") // remove "1. ", "2. " etc
+            .trim()
+        )
+        .filter(Boolean);
+
+      // 3️⃣ Store a clean object in state
+      setAdvisory({
+        disease: jsonObj.disease,
+        remedies: remediesArray,
+      });
+    } catch (error) {
+      toast.error(
+        error.response?.data?.error ||
+          error.response?.data?.message ||
+          "Failed to fetch advisory"
+      );
+    } finally {
+      setIsAdvisoryLoading(false);
+    }
   };
 
   return (
@@ -288,7 +365,8 @@ const PestDetection = () => {
                             <div className="inline-flex items-center gap-1 bg-white/80 px-3 py-1 rounded-full shadow-sm border border-red-100">
                               <AlertTriangle className="h-4 w-4 text-orange-500" />
                               <span className="text-xs sm:text-sm font-bold text-red-900">
-                                {Math.round(Number(result.confidence) * 100)}% Match
+                                {Math.round(Number(result.confidence) * 100)}%
+                                Match
                               </span>
                             </div>
                           </div>
@@ -360,12 +438,52 @@ const PestDetection = () => {
                       </div>
                     </div>
 
-                    {/* CTA */}
-                    <div className="pt-1 sm:pt-2">
-                      <button className="inline-flex items-center text-sm sm:text-base text-emerald-700 font-semibold hover:text-emerald-900 hover:underline decoration-emerald-500">
-                        View detailed advisory for {result.disease_name}
+                    {/* CTA + Advisory */}
+                    <div className="pt-1 sm:pt-2 space-y-3">
+                      <button
+                        onClick={() => handleFetchAdvisory(result.disease_name)}
+                        disabled={isAdvisoryLoading}
+                        className="inline-flex items-center text-sm sm:text-base text-emerald-700 font-semibold hover:text-emerald-900 hover:underline decoration-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {isAdvisoryLoading
+                          ? "Fetching advisory..."
+                          : `View detailed advisory for ${result.disease_name}`}
                         <ArrowRight className="h-4 w-4 ml-1" />
                       </button>
+
+                      {advisory && (
+                        <div className="mt-1 p-4 sm:p-5 rounded-2xl bg-white/80 border border-emerald-100 shadow-sm">
+                          <h3 className="text-sm sm:text-base font-bold text-emerald-900 mb-2">
+                            Detailed Advisory
+                          </h3>
+
+                          {/* If we parsed it properly */}
+                          {advisory.remedies ? (
+                            <div className="text-xs sm:text-sm text-emerald-950 leading-relaxed">
+                              <p className="font-semibold mb-2">
+                                Disease: {advisory.disease}
+                              </p>
+                              <p className="font-semibold">
+                                Recommended Remedies:
+                              </p>
+                              <ul className="list-disc ml-5 mt-1 space-y-1">
+                                {advisory.remedies.map((remedy, index) => (
+                                  <li key={index}>{remedy}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          ) : (
+                            // Fallback: if we couldn't parse JSON, show raw text
+                            <p className="text-xs sm:text-sm text-emerald-950 whitespace-pre-line">
+                              {advisory.raw ||
+                                advisory.advisory ||
+                                advisory.details ||
+                                advisory.message ||
+                                JSON.stringify(advisory, null, 2)}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -392,4 +510,3 @@ const PestDetection = () => {
 };
 
 export default PestDetection;
-``;
